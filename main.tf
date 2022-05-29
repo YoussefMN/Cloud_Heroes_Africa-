@@ -103,7 +103,7 @@ resource "aws_nat_gateway" "NATgw" {
 # launch ec2 instance in public subnet
 resource "aws_key_pair" "demokey" {
   key_name   = "demokey"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMI+XGlilcVI/WW+sou9jAidIWkgtZ1sbuNdc5/yC/O7ek29Da/NrHpJRj84Z+zncKy779r7k39ge7dFIbAR+VWdzMdXiov7a7iWTBMgrPRrdIWH7hUBct1O5E+Scf41svyUYZasWQDX2Vg9cnkNABu8N4Eu4RyjqpBtZBM5v/UmntwLr/G/cCYyfEoV6xptkWbwVo7SCNJ3KG9unmF0hkIl7RxO/xTjH7m53zkYzrCw7xwaN+gsjorAIsAGyPyiC7TyvjVgmBGTjC2sVOPfiB9HmV2VEWAt7C44s+cI8dQpEylWbDBj/xxpnXNmyHBb24MDcBv2TUHRyMwjZ5uxuX ec2-user@ip-10-0-0-47.eu-west-1.compute.internal"
+  public_key = "********" #the path to the file or the value of public key
 }
 
 resource "aws_security_group" "web_sg" {
