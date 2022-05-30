@@ -7,6 +7,7 @@ provider "aws" {
 resource "aws_vpc" "Main" {
   cidr_block       = "10.0.0.0/24" #var.main_vpc_cidr
   instance_tenancy = "default"
+  enable_dns_hostnames = "true"
   tags = {
     Name = "vpc-demo"
   }
@@ -61,18 +62,6 @@ resource "aws_route_table" "PublicRT" {
   }
 }
 
-#Route table for private subnets
-resource "aws_route_table" "PrivateRT" {
-  vpc_id = aws_vpc.Main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.NATgw.id
-  }
-  tags = {
-    Name = "Private-route"
-  }
-}
-
 #Route table association with public subnet
 resource "aws_route_table_association" "PublicRTassociation" {
   subnet_id      = aws_subnet.publicsubnets.id
@@ -80,30 +69,10 @@ resource "aws_route_table_association" "PublicRTassociation" {
 
 }
 
-#Route table association with private subnet
-resource "aws_route_table_association" "PrivateRTassociation" {
-  subnet_id      = aws_subnet.privatesubnets.id
-  route_table_id = aws_route_table.PrivateRT.id
-
-}
-
-resource "aws_eip" "nateIP" {
-  vpc = true
-}
-
-# Creating the NAT Gateway using subnet_id and allocation_id
-resource "aws_nat_gateway" "NATgw" {
-  allocation_id = aws_eip.nateIP.id
-  subnet_id     = aws_subnet.publicsubnets.id
-  tags = {
-    Name = "Nat-demo"
-  }
-}
-
 # launch ec2 instance in public subnet
 resource "aws_key_pair" "demokey" {
   key_name   = "demokey"
-  public_key = "********" #the path to the file or the value of public key
+  public_key = "Here you can define the path to public key or the value"
 }
 
 resource "aws_security_group" "web_sg" {
@@ -130,22 +99,6 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
 resource "aws_instance" "website" {
   ami                         = "ami-0c1bc246476a5572b"
   instance_type               = "t2.micro"
@@ -158,18 +111,6 @@ resource "aws_instance" "website" {
     Name = "website-instance"
   }
 }
-
-resource "aws_instance" "web" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.demokey.id
-  subnet_id              = aws_subnet.privatesubnets.id
-  vpc_security_group_ids = [aws_security_group.web_sg.id]
-  tags = {
-    Name = "demo-instance"
-  }
-}
-
 
 # launch RDS in private subnet
 resource "aws_security_group" "rds" {
