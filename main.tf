@@ -143,7 +143,7 @@ resource "aws_db_instance" "mydb" {
   engine_version         = "8.0"
   instance_class         = "db.t2.micro"
   identifier             = "mydb"
-  name                   = "mydb"
+  db_name                = "mydb"
   username               = "root"
   password               = "foobarbaz"
   publicly_accessible    = false
