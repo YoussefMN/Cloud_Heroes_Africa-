@@ -6,8 +6,7 @@ provider "aws" {
 # Create the VPC 
 resource "aws_vpc" "Main" {
   cidr_block           = "10.0.0.0/24" #var.main_vpc_cidr
-  instance_tenancy     = "default"
-  enable_dns_hostnames = "true"
+  instance_tenancy     = "defau
   tags = {
     Name = "Main"
   }
