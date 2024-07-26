@@ -2,4 +2,4 @@
 yum update -y
 yum install -y httpd
 systemctl start httpd
-echo "Hello Cloud Heroes Africa !" > /var/www/html/index.html
+echo "Welcome Tunisia to AWS community day!" > /var/www/html/index.html

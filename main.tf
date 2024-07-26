@@ -5,8 +5,8 @@ provider "aws" {
 
 # Create the VPC 
 resource "aws_vpc" "Main" {
-  cidr_block       = "10.0.0.0/24" #var.main_vpc_cidr
-  instance_tenancy = "default"
+  cidr_block           = "10.0.0.0/24" #var.main_vpc_cidr
+  instance_tenancy     = "default"
   enable_dns_hostnames = "true"
   tags = {
     Name = "vpc-demo"
@@ -70,24 +70,14 @@ resource "aws_route_table_association" "PublicRTassociation" {
 }
 
 # launch ec2 instance in public subnet
-resource "aws_key_pair" "demokey" {
-  key_name   = "demokey"
-  public_key = "Here you can define the path to public key or the value"
-}
 
 resource "aws_security_group" "web_sg" {
   name   = "demo-sg"
   vpc_id = aws_vpc.Main.id
-  
+
   ingress {
     from_port   = 80
     to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 22
-    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -102,7 +92,6 @@ resource "aws_security_group" "web_sg" {
 resource "aws_instance" "website" {
   ami                         = "ami-0c1bc246476a5572b"
   instance_type               = "t2.micro"
-  key_name                    = aws_key_pair.demokey.id
   subnet_id                   = aws_subnet.publicsubnets.id
   vpc_security_group_ids      = [aws_security_group.web_sg.id]
   associate_public_ip_address = true
@@ -140,8 +129,8 @@ resource "aws_db_instance" "mydb" {
   allocated_storage      = 100
   storage_type           = "gp2"
   engine                 = "mysql"
-  engine_version         = "8.0"
-  instance_class         = "db.t2.micro"
+  engine_version         = "8.0.35"
+  instance_class         = "db.t3.micro"
   identifier             = "mydb"
   db_name                = "mydb"
   username               = "root"
