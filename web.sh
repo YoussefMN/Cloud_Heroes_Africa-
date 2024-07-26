@@ -8,7 +8,7 @@ cat <<EOF > /var/www/html/index.html
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome Day - AWS Community Tunisia</title>
+    <title>AWS Community Day Tunisia</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,6 +28,8 @@ cat <<EOF > /var/www/html/index.html
             width: 100%;
             padding: 20px;
             text-align: center;
+            position: fixed;
+            top: 0;
         }
         .content {
             margin: 20px;
@@ -65,8 +67,8 @@ cat <<EOF > /var/www/html/index.html
         <h1>AWS Community Day Tunisia</h1>
     </header>
     <div class="content">
-        <h1>Welcome to the AWS Cloud Enthusiasts !</h1>
-        <p>We are excited to have you join us for this special day. Together, we will explore the world of AWS, learn from each other, and build amazing things.</p>
+        <h1>Welcome to AWS, Cloud Enthusiasts!</h1>
+        <p>We are excited to have you join us for this special day. Together, we will explore the world of Terraform on AWS, learn and build amazing things.</p>
     </div>
 </body>
 </html>
