@@ -9,7 +9,7 @@ resource "aws_vpc" "Main" {
   instance_tenancy     = "default"
   enable_dns_hostnames = "true"
   tags = {
-    Name = "vpc-demo"
+    Name = "Main"
   }
 }
 
@@ -17,16 +17,16 @@ resource "aws_vpc" "Main" {
 resource "aws_internet_gateway" "IGW" {
   vpc_id = aws_vpc.Main.id
   tags = {
-    Name = "igw-demo"
+    Name = "IGW"
   }
 }
 
-# Create a public subnets
+# Create a subnets
 resource "aws_subnet" "publicsubnets" {
   vpc_id     = aws_vpc.Main.id
   cidr_block = "10.0.0.128/26" #var.publicsubnets
   tags = {
-    Name = "pub-demo"
+    Name = "publicsubnets"
   }
 }
 resource "aws_subnet" "privatesubnets" {
@@ -34,10 +34,9 @@ resource "aws_subnet" "privatesubnets" {
   cidr_block        = "10.0.0.192/26" #var.privatesubnets
   availability_zone = "eu-west-1a"
   tags = {
-    Name = "priv-demo"
+    Name = "privatesubnets"
   }
 }
-
 resource "aws_subnet" "privatesubnet2" {
   vpc_id            = aws_vpc.Main.id
   cidr_block        = "10.0.0.64/26"
@@ -50,6 +49,7 @@ resource "aws_db_subnet_group" "dbsubnet" {
   name       = "dbsubnetgroup"
   subnet_ids = [aws_subnet.privatesubnets.id, aws_subnet.privatesubnet2.id]
 }
+
 #Route table for public subnets
 resource "aws_route_table" "PublicRT" {
   vpc_id = aws_vpc.Main.id
@@ -58,7 +58,7 @@ resource "aws_route_table" "PublicRT" {
     gateway_id = aws_internet_gateway.IGW.id
   }
   tags = {
-    Name = "Public-route"
+    Name = "Public-RT"
   }
 }
 
@@ -69,8 +69,7 @@ resource "aws_route_table_association" "PublicRTassociation" {
 
 }
 
-# launch ec2 instance in public subnet
-
+#Security group for ec2 instance in public subnet
 resource "aws_security_group" "web_sg" {
   name   = "demo-sg"
   vpc_id = aws_vpc.Main.id
@@ -87,21 +86,11 @@ resource "aws_security_group" "web_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
-
-resource "aws_instance" "website" {
-  ami                         = "ami-0c1bc246476a5572b"
-  instance_type               = "t2.micro"
-  subnet_id                   = aws_subnet.publicsubnets.id
-  vpc_security_group_ids      = [aws_security_group.web_sg.id]
-  associate_public_ip_address = true
-  user_data                   = file("web.sh")
   tags = {
-    Name = "website-instance"
+    Name = "SG-WEB"
   }
 }
-
-# launch RDS in private subnet
+#Security group for RDS instance in private subnet
 resource "aws_security_group" "rds" {
   name        = "terraform_rds_security_group"
   description = "Terraform example RDS MySQL server"
@@ -121,10 +110,24 @@ resource "aws_security_group" "rds" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "terraform-example-rds-security-group"
+    Name = "SG-RDS"
   }
 }
 
+#Launch ec2 instance with userdata script
+resource "aws_instance" "website" {
+  ami                         = "ami-0c1bc246476a5572b"
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.publicsubnets.id
+  vpc_security_group_ids      = [aws_security_group.web_sg.id]
+  associate_public_ip_address = true
+  user_data                   = file("web.sh")
+  tags = {
+    Name = "website"
+  }
+}
+
+#Launch RDS database instance
 resource "aws_db_instance" "mydb" {
   allocated_storage      = 100
   storage_type           = "gp2"
